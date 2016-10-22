@@ -4,6 +4,7 @@
   "description": "Camera IP mapping server",
   "main": "cimps.js",
   "scripts": {
+    "start": "node cimps.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Archibald Chiang",
