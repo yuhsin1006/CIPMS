@@ -26,5 +26,7 @@ function portMapping (ttl) {
         } else {
             console.log('Request for port mapping valids for ' + ttl + ' seconds');
         }
-    }), ttl-1);
+    }), (ttl-1) * 1000);
 }
+
+portMapping(86400);

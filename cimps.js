@@ -6,13 +6,10 @@
  * Description : index.js for CIMPS.            +
  * ---------------------------------------------*/
 
-var upnp = require('./facilities/upnp.js'); // upnp port forwarding
+var upnp = require('./utilities/upnp.js'); // upnp port forwarding
 var express = require('express');
 var app = express();
 
-
-// upnp port forwarding
-portMapping(50);
 
 // root route
 app.get('/', function (req, res) {
