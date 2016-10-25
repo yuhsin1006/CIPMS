@@ -39,7 +39,7 @@ app.use('/devices', function (req, res) {
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
-    res.status(500).send('Error! Please connect the administrator');
+    res.status(500).send('Error! Please connect the administrator.');
 });
 
 app.listen(3000, function () {

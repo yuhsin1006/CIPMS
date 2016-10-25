@@ -22,7 +22,8 @@ function portMapping (ttl) {
     setTimeout(client.portMapping(config , function (err) {
         // Will be called once finished
         if (err) {
-            console.err('Error occurred');
+            console.log(err);
+            console.log('[Warning: UPnP port mapping failed]\n');
         } else {
             console.log('Request for port mapping valids for ' + ttl + ' seconds');
         }
