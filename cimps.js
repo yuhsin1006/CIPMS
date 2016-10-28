@@ -34,7 +34,8 @@ app.use('/devices', function (req, res) {
     }; // record device information
     console.log(deviceInfo); // log incoming information
 
-    res.status(200).send('success');
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(JSON.stringify({ a: 1 }));
 });
 
 app.use(function (err, req, res, next) {
