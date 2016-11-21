@@ -6,8 +6,10 @@
  * Description : activate upnp functionality    +
  * ---------------------------------------------*/
 
+'use strict'
+
 require('timers');
-var natUpnp = require('../node_modules/node-nat-upnp/lib/nat-upnp.js');
+var natUpnp = require('./node-nat-upnp/lib/nat-upnp.js');
 var client = natUpnp.createClient();
 
 
