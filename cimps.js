@@ -16,18 +16,22 @@ var assert = require('assert');
 // express
 var express = require('express');
 var app = express();
-var path = require("path");
+var path = require('path');
 
 
-// root route
-app.get('/', function(req, res) {
-    var responseText = 'Hello World!<br>';
-    res.send(responseText);
-});
+// set folder 'public' as public
+app.use(express.static('public'));
+
 
 // to login page
 app.get('/login', function(req, res) {
-    res.sendFile(path.join(__dirname+'/pages/login.html'));
+    res.sendFile(path.join(__dirname+'/public/login.html'));
+});
+
+// app authentication
+app.post('/auth', function(req, res) {
+    var responseText = 'Hello World!<br>';
+    res.send(responseText);
 });
 
 // route that devices will automatically connect and reqister their current ip:port
