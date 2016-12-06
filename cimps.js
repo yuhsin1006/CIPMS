@@ -17,11 +17,14 @@ var assert = require('assert');
 var express = require('express');
 var app = express();
 var path = require('path');
+// bodyParser
+var bodyParser = require('body-parser');
 
 
 // set folder 'public' as public
 app.use(express.static('public'));
-
+// use body-parser to parse body with json file
+app.use(bodyParser.json());
 
 // to login page
 app.get('/login', function(req, res) {
@@ -30,6 +33,8 @@ app.get('/login', function(req, res) {
 
 // app authentication
 app.post('/auth', function(req, res) {
+    console.log(req.body); // show body of request
+
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ result: 1 }));
 });
