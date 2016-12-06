@@ -5,7 +5,7 @@ var mongoClient = require('mongodb').MongoClient;
 var test = require('assert');
 
 
-function doAuthentication (usrname, pwd) {
+module.exports.doAuthentication = function (usrname, pwd) {
     MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
         var collection = db.collection('users');
 

@@ -30,8 +30,8 @@ app.get('/login', function(req, res) {
 
 // app authentication
 app.post('/auth', function(req, res) {
-    var responseText = 'Hello World!<br>';
-    res.send(responseText);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ result: 1 }));
 });
 
 // route that devices will automatically connect and reqister their current ip:port
