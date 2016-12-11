@@ -1,21 +1,38 @@
 'use strict'
+exports.version = '1.0.0';
 
 // mongoDB
 var mongoClient = require('mongodb').MongoClient;
 var test = require('assert');
 
 
-module.exports.doAuthentication = function (usrname, pwd) {
-    MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+// compare 
+module.exports.verify = function (usrname, pwd) {
+    var result = false; // initialize result to fail
+
+    mongoClient.connect('mongodb://localhost:27017/cimpsDB', function(err, db) {
         var collection = db.collection('users');
 
-        // verify username first
-        var result = collection.findOne({username: usrname}, function(err, doc) {
-            test.equal(null, err);
-            db.close();
-        });
+        try {
+            // verify username first
+            var promise = collection.findOne({
+                    username: usrname,
+                    password: pwd
+                }, function(err, doc) {
+                    test.equal(null, err);
+                    db.close();
+                });
+            
+            promise.done(function() {
+                result = true;
+            });
+            promise.fail(function() {
+                throw('Not found');
+            });
+        } catch (err) {
+            console.log(err.name, err.message);
+        }
     });
 
-
-    console.log(result);
+    return result;
 }

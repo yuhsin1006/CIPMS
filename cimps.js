@@ -11,14 +11,15 @@
 // upnp port forwarding
 //var upnp = require('./utilities/upnp.js'); 
 // mongoDB
-var mongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
+var mongo = require('./utilities/database.js');
 // express
 var express = require('express');
 var app = express();
 var path = require('path');
 // bodyParser
 var bodyParser = require('body-parser');
+// authentication
+var auth = require('./utilities/auth.js');
 
 
 // set folder 'public' as public
@@ -33,10 +34,16 @@ app.get('/login', function(req, res) {
 
 // app authentication
 app.post('/auth', function(req, res) {
-    console.log(req.body); // show body of request
-
+    var data = req.body;
+    var result = auth.verify(data.email, data.pwd);
+    
+    console.log(result);
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ result: 1 }));
+    if (result == true) {
+        res.send(JSON.stringify({ result: 1 })); // 1 indicates true
+    } else {
+        res.send(JSON.stringify({ result: 0 }));
+    }
 });
 
 // route that devices will automatically connect and reqister their current ip:port
@@ -60,16 +67,20 @@ app.use('/devices', function(req, res) {
 
     // insert into database and response the result
     // connection url
-    var url = 'mongodb://localhost:27017/cimpsDB';
-    // use connect method to connect to the server
-    mongoClient.connect(url, function(err, db) {
-        assert.equal(null, err);
-        console.log("Connecting to db successfully");
+    // var url = 'mongodb://localhost:27017/cimpsDB';
+    // // use connect method to connect to the server
+    // mongoClient.connect(url, function(err, db) {
+    //     assert.equal(null, err);
+    //     console.log("Connecting to db successfully");
 
-        insertDocument(deviceInfo, db);
-        // 0: fail, 1: success
-        res.sendStatus(200);
-    });
+    //     insertDocument(deviceInfo, db);
+    //     
+    //     res.sendStatus(200);
+    // });
+
+    mongo.insertDocument('cimpsDB', 'devices', deviceInfo);
+    console.log(mongo.findDocument('cimps', 'devices', {serial: 1}));
+    res.sendStatus(200); // 0: fail, 1: success
 });
 
 app.use(function(err, req, res, next) {
@@ -80,23 +91,3 @@ app.use(function(err, req, res, next) {
 app.listen(3000, function() {
     console.log('App listening on port 3000.\n');
 });
-
-
-// used to insert data into db
-var insertDocument = function(data, db) {
-    return new Promise(function(resolve, reject) {
-        // get the documents collection
-        var collection = db.collection('devices');
-        // insert some documents
-        if(data != null) {
-            collection.insert(data, function(err, result) {
-                assert.equal(err, null);
-                console.log('Insert document successfully');
-
-                resolve(result);
-            });
-        } else {
-            throw new Error('Data is null!');
-        }
-    });
-}

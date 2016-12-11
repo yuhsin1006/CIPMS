@@ -132,9 +132,6 @@
       });
 
       $('#create').click(function(){
-          alert(document.getElementById('reg_email').value + "\n" +
-                "Password is " + document.getElementById('reg_pwd').value);
-
           
       });
 
@@ -143,6 +140,7 @@
       });
 
 
+      // register
       function loginMsgSend() {
         var msg = {
           email: $('#in_email').val(),
@@ -168,6 +166,36 @@
             success: function() {                                                           
             //資料傳送成功後就會執行這個function內的程式，可以在這裡寫入要執行的程式  
               alert("成功");
+            }
+        }); 
+      }
+
+      //login
+      function loginMsgSend() {
+        var msg = {
+          email: $('#in_email').val(),
+          pwd: $('#in_pwd').val()
+        }
+        console.log(msg);                         
+        $.ajax({
+            //告訴程式表單要傳送到哪裡                                          
+            url:"/auth",                                                              
+            //需要傳送的資料
+            data: JSON.stringify(msg),
+            //使用POST方法     
+            type: "POST",                                                                    
+            //接收回傳資料的格式，在這個例子中，只要是接收true就可以了
+            contentType: 'application/json; charset=utf-8',        
+            dataType: 'json', 
+            //傳送失敗則跳出失敗訊息       
+            error: function() {                                                                 
+            //資料傳送失敗後就會執行這個function內的程式，可以在這裡寫入要執行的程式  
+              alert("失敗");
+            },
+            //傳送成功則跳出成功訊息
+            success: function() {                                                           
+            //資料傳送成功後就會執行這個function內的程式，可以在這裡寫入要執行的程式  
+              console.log("success");
             }
         }); 
       }
