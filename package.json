@@ -2,9 +2,9 @@
   "name": "cipms",
   "version": "1.0.0",
   "description": "Camera IP mapping server",
-  "main": "cimps.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node cimps.js",
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Archibald Chiang",

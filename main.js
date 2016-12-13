@@ -1,5 +1,5 @@
 /* ---------------------------------------------+
- * FILE NAME - upnp.js                          +
+ * FILE NAME - main.js                          +
  * ---------------------------------------------+
  * Creator : Archibald Chiang                   +
  * ---------------------------------------------+
@@ -9,22 +9,22 @@
 'use strict';
 
 // upnp port forwarding
-//var upnp = require('./utilities/upnp.js'); 
-// mongoDB
+//var upnp = require('./utilities/upnp.js');
+// import mongoDB libaraies
 var mongo = require('./utilities/database.js');
-// express
+// express libaraies
 var express = require('express');
 var app = express();
 var path = require('path');
 // bodyParser
 var bodyParser = require('body-parser');
-// authentication
+// authentication module
 var auth = require('./utilities/auth.js');
 
 
-// set folder 'public' as public
+// set folder 'public' as public access folder
 app.use(express.static('public'));
-// use body-parser to parse body with json file
+// use body-parser to parse body to json format
 app.use(bodyParser.json());
 
 // to login page
@@ -32,17 +32,18 @@ app.get('/login', function(req, res) {
     res.sendFile(path.join(__dirname+'/public/login.html'));
 });
 
-// app authentication
+// user login authentication
 app.post('/auth', function(req, res) {
     var data = req.body;
-    var result = auth.verify(data.email, data.pwd);
-    
+    var result = auth.verify(data.email, data.pwd); // verify email and password then return result
     console.log(result);
+
+    // send json response
     res.setHeader('Content-Type', 'application/json');
     if (result == true) {
-        res.send(JSON.stringify({ result: 1 })); // 1 indicates true
+        res.send(JSON.stringify({ result: 1 })); // 1 indicates success
     } else {
-        res.send(JSON.stringify({ result: 0 }));
+        res.send(JSON.stringify({ result: 0 })); // 0 indicates authentication fail
     }
 });
 
@@ -55,36 +56,32 @@ app.use('/devices', function(req, res) {
     //    ip:       <string>  ip address
     //    port:     <int>     port
     //    regTime:  <Date>    time that remote device registered
+    //    belongTo: <string>  
     // }
+    // record device information
     var deviceInfo = {
         serial: 1,
         mac: 1,
         ip: req.connection.remoteAddress,
         port: req.connection.remotePort,
-        regTime: Date.now()
-    }; // record device information
+        regTime: Date.now(),
+        belongTo: null
+    }; 
     console.log(deviceInfo); // log incoming information
 
-    // insert into database and response the result
-    // connection url
-    // var url = 'mongodb://localhost:27017/cimpsDB';
-    // // use connect method to connect to the server
-    // mongoClient.connect(url, function(err, db) {
-    //     assert.equal(null, err);
-    //     console.log("Connecting to db successfully");
-
-    //     insertDocument(deviceInfo, db);
-    //     
-    //     res.sendStatus(200);
-    // });
-
-    mongo.insertDocument('cimpsDB', 'devices', deviceInfo);
-    console.log(mongo.findDocument('cimps', 'devices', {serial: 1}));
-    res.sendStatus(200); // 0: fail, 1: success
+    // insert into database and return result
+    var result = mongo.insertDocument('cimpsDB', 'devices', deviceInfo);
+    // send json response
+    res.setHeader('Content-Type', 'application/json');
+    if (result == true) {
+        res.send(JSON.stringify({ result: 1 })); // success
+    } else {
+        res.send(JSON.stringify({ result: 0 })); // fail to insert doc
+    }
 });
 
 app.use(function(err, req, res, next) {
-    console.error(err.stack);
+    console.log(err.stack);
     res.sendStatus(500);
 });
 
