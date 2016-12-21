@@ -10,61 +10,84 @@
 'use strict'
 exports.version = '1.0.3';
 
+
 // import mongoDB libaraies
-var mongoClient = require('mongodb').MongoClient;
-var test = require('assert');
+let MongoClient = require('mongodb').MongoClient;
 
 
 // insert a document to database
-module.exports.insertDocument = function(dbName, col, data) {
-    var dbURL = 'mongodb://localhost:27017/' + dbName; // database url, usually at localhost
-    var result = false; // initialize result to false (fail)
-
-    if (data == undefined) { // check whether input data is undefined
-        console.log('No data to be added.\n\n');
-        return result;
+async function insertDocument(dbName, collectionName, data) {
+    // when parameter is undefined
+    if (!data) {
+        throw new Error('No data');
+    }
+    if (!collectionName || typeof collectionName != 'string') {
+        throw new Error('Bad collection name');
     }
 
-    mongoClient.connect(dbURL, function(err, db) {
-        var collection = db.collection(col); // select collection
+    // establish connection
+    let connection;
+    try {
+        connection = await MongoClient.connect(`mongodb://localhost:27017/${dbName}`);
+    } catch (connectionError) {
+        // handle error when connection failed
+        throw new Error('Database connection error');
+    }
 
-        // insert a document and return a promise
-        collection.insertOne(data)
-        .then(function(value) {
-            console.log('Insert document successfully.\n\n');
-        }, function(reason) {
-            // executes when rejected
-            console.log('Fail to insert document.\n\n');
-        });
+    // select collection and insert data
+    let collection = connection.collection(collectionName);
+    try {
+        await collection.insertOne(data);
+    } catch (insertError) {
+        throw new Error('Failed to insert');
+    }
 
-        db.close(); // close connection to database
-    });
 
+    connection.close();
+    return;
+}
+
+
+/* WARNING! This module is still under construction! */
+async function findDocument(dbName, collectionName, data) {
+    if (!data) {
+        throw new Error('No condition to be referenced.');
+    }
+    if (!collcetionName || typeof collectionName != 'string') {
+        throw new Error('Bad collection name');
+    }
+
+
+    // establish connection
+    let connection;
+    try {
+        connection = await MongoClient.connect(`mongodb://localhost:27017/${dbName}`);
+    } catch (connectionError) {
+        // handle error when connection failed
+        throw new Error('Database connection error');
+    }
+
+    // select collection and insert data
+    let collection = connection.collection(collectionName);
+    let result;
+    try {
+        await collection.findOne(data)
+            .then(value => {
+                result = value;
+            }, reason => {
+                throw new Error(reason);
+            });
+    } catch (insertError) {
+        throw new Error('Failed to insert');
+    }
+
+
+    connection.close();
     return result;
 }
 
-/* WARNING! This module is still underconstruction! */
-module.exports.findDocument = function(dbName, col, cond) {
-    var dbURL = 'mongodb://localhost:27017/' + dbName;
-    var result;
 
-    if (cond == undefined) {
-        throw 'No condition to be referenced.';
-    }
-    mongoClient.connect(dbURL, function(err, db) {
-        var collection = db.collection(col);
-
-        // insert a document and return a promise
-        collection.findOne(cond)
-        .then(function(value) {
-            ;
-        }, function(reason) {
-            // executes when rejected
-            console.log('Fail to insert document.\n\n');
-        });
-
-        db.close(); // close connection to database
-    });
-
-    return result;
+module.exports = {
+    insertDocument: insertDocument,
+    findDocument: findDocument
 }

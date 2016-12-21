@@ -132,7 +132,7 @@
       });
 
       $('#create').click(function(){
-          
+          regMsgSend();
       });
 
       $('#login').click(function() {
@@ -141,15 +141,15 @@
 
 
       // register
-      function loginMsgSend() {
+      function regMsgSend() {
         var msg = {
-          email: $('#in_email').val(),
-          pwd: $('#in_pwd').val()
+          email: $('#reg_email').val(),
+          pwd: $('#reg_pwd').val()
         }
-        console.log(msg);                         
+                  
         $.ajax({
             //告訴程式表單要傳送到哪裡                                          
-            url:"/auth",                                                              
+            url:"/userSignup",                                                              
             //需要傳送的資料
             data: JSON.stringify(msg),
             //使用POST方法     

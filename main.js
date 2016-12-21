@@ -3,7 +3,7 @@
  * ---------------------------------------------+
  * Creator : Archibald Chiang                   +
  * ---------------------------------------------+
- * Description : index.js for CIMPS.            +
+ * Description : index program for CIMPS.       +
  * ---------------------------------------------*/
 
 'use strict';
@@ -28,27 +28,63 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // to login page
-app.get('/login', function(req, res) {
-    res.sendFile(path.join(__dirname+'/public/login.html'));
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname + '/public/login.html'));
+});
+
+// handle sign up process form user
+app.post('/userSignup', (req, res) => {
+    var data = req.body;
+
+    /* send json response */
+    // response data schema
+    // {
+    //      result:   <integer>  1: success, 0:fail
+    //      message:  <string>   message to user, shown by client app
+    // }
+    var resData = {
+        result: 0,
+        message: '錯誤。'
+    };
+    mongo.insertDocument('cimpsDB', 'users', data) // insert document
+        .then(() => {
+            resData = {
+                result: 1,
+                message: '註冊成功!'
+            };
+
+            console.log('Success\n\n');
+        }, err => {
+            resData = {
+                result: 0,
+                message: '註冊失敗，請再試一次。'
+            };
+
+            console.log(err);
+        });
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(resData));
 });
 
 // user login authentication
-app.post('/auth', function(req, res) {
+app.post('/auth', (req, res) => {
     var data = req.body;
     var result = auth.verify(data.email, data.pwd); // verify email and password then return result
-    console.log(result);
 
     // send json response
     res.setHeader('Content-Type', 'application/json');
     if (result == true) {
         res.send(JSON.stringify({ result: 1 })); // 1 indicates success
+        console.log('Authentication success');
     } else {
         res.send(JSON.stringify({ result: 0 })); // 0 indicates authentication fail
+        console.log('Authentication fail.');
     }
 });
 
 // route that devices will automatically connect and reqister their current ip:port
-app.use('/devices', function(req, res) {
+app.use('/devices', (req, res) => {
     // Device information object
     // {
     //    serial:   <string>  product serial number
@@ -66,25 +102,30 @@ app.use('/devices', function(req, res) {
         port: req.connection.remotePort,
         regTime: Date.now(),
         belongTo: null
-    }; 
+    };
     console.log(deviceInfo); // log incoming information
 
     // insert into database and return result
-    var result = mongo.insertDocument('cimpsDB', 'devices', deviceInfo);
+    let resData;
+    mongo.insertDocument('cimpsDB', 'devices', deviceInfo)
+        .then(() => {
+            resData = { result: 1 };
+            console.log('Success\n\n');
+        }, err => {
+            resData = { result: 0 };
+            console.log(err);
+        });
+
     // send json response
     res.setHeader('Content-Type', 'application/json');
-    if (result == true) {
-        res.send(JSON.stringify({ result: 1 })); // success
-    } else {
-        res.send(JSON.stringify({ result: 0 })); // fail to insert doc
-    }
+    res.send(JSON.stringify(resData));
 });
 
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
     console.log(err.stack);
     res.sendStatus(500);
 });
 
-app.listen(3000, function() {
+app.listen(3000, () => {
     console.log('App listening on port 3000.\n');
 });
