@@ -11,7 +11,7 @@
 // upnp port forwarding
 //var upnp = require('./utilities/upnp.js');
 // import mongoDB libaraies
-var mongo = require('./utilities/database.js');
+var db = require('./utilities/database.js');
 // express libaraies
 var express = require('express');
 var app = express();
@@ -46,7 +46,7 @@ app.post('/userSignup', (req, res) => {
         result: 0,
         message: '錯誤。'
     };
-    mongo.insertDocument('cimpsDB', 'users', data) // insert document
+    db.insertDocument('cimpsDB', 'users', data) // insert document
         .then(() => {
             resData = {
                 result: 1,
@@ -69,18 +69,33 @@ app.post('/userSignup', (req, res) => {
 
 // user login authentication
 app.post('/auth', (req, res) => {
-    var data = req.body;
-    var result = auth.verify(data.email, data.pwd); // verify email and password then return result
+    let data = req.body;
+    let resData = {
+        result: 0, // 1: success, 0:fail
+        description: '錯誤，請再試一次'
+    };
+    auth.verify(data.email, data.pwd) // verify email and password then return result
+        .then(result => {
+            console.log(result);
+            if (result.status) {
+                resData = {
+                    result: 1,
+                    description: '認證成功'
+                };
+            } else {
+                resData = {
+                    result: 0,
+                    description: '帳號或密碼錯誤'
+                };
+            }
+        }, reason => {
+            console.log(reason);
+        });
+
 
     // send json response
     res.setHeader('Content-Type', 'application/json');
-    if (result == true) {
-        res.send(JSON.stringify({ result: 1 })); // 1 indicates success
-        console.log('Authentication success');
-    } else {
-        res.send(JSON.stringify({ result: 0 })); // 0 indicates authentication fail
-        console.log('Authentication fail.');
-    }
+    res.send(JSON.stringify(resData));
 });
 
 // route that devices will automatically connect and reqister their current ip:port
@@ -107,7 +122,7 @@ app.use('/devices', (req, res) => {
 
     // insert into database and return result
     let resData;
-    mongo.insertDocument('cimpsDB', 'devices', deviceInfo)
+    db.insertDocument('cimpsDB', 'devices', deviceInfo)
         .then(() => {
             resData = { result: 1 };
             console.log('Success\n\n');

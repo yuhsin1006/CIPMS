@@ -8,39 +8,77 @@
  * ---------------------------------------------*/
 
 'use strict'
-exports.version = '1.1.0';
+exports.version = '2.0.0';
 
-// mongoDB
-var mongoClient = require('mongodb').MongoClient;
-var test = require('assert');
+// mongoDB library
+let MongoClient = require('mongodb').MongoClient;
 
 
 // compare 
-module.exports.verify = function (usrname, pwd) {
-    return new Promise((resolve, reject) => {
-        mongoClient.connect('mongodb://localhost:27017/cimpsDB')
-            .then(db => {
-                var collection = db.collection('users');
+async function verify(mail, pwd) {
+    // check input data
+    if (!mail || !pwd) {
+        reject(new Error('Input data is invalid.'));
+    }
 
-                // data to be found
-                var queryCondition = {
-                    email: usrname
+
+    // establish connection
+    let connection;
+    try {
+        connection = await MongoClient.connect(`mongodb://localhost:27017/cimpsDB`);
+    } catch (connectionError) {
+        // handle error when connection failed
+        throw new Error('Database connection error');
+    }
+
+    // select collection and insert data
+    let collection = connection.collection('users');
+    // data to be found
+    let queryTarget = {
+        email: mail
+    };
+    // authentication result
+    let result = {
+        status: false,
+        description: ''
+    };
+    try {
+        await collection.findOne(queryTarget)
+            .then(doc => {
+                if (doc) { // check whether doc exists
+                    if (doc.pwd == pwd) {
+                        result = {
+                            status: true,
+                            description: 'Success.'
+                        };
+                    } else {
+                        result = {
+                            status: false,
+                            description: 'Passord is not correct.'
+                        };
+                    }
+                } else {
+                    result = {
+                        status: false,
+                        description: 'Email is not found.'
+                    };
+                }
+            }, reason => {
+                result = {
+                    status: false,
+                    description: reason
                 };
-                collection.findOne(queryCondition)
-                    // promise call back schema: resolve, reject
-                    .then(doc => {
-                        if (doc != null) { // get data we need or not
-                            if (doc.pwd == pwd) {
-                                result = true;
-                            }
-                            db.close();
-                        }
-                    }, reason => {
-                        reject(new Error(reason));
-                    });
-            }, err => {
-                reject(new Error(err));
-                return;
             });
-    });
+    } catch (queryError) {
+        throw new Error(queryError);
+    }
+
+
+    connection.close();
+    return result;
 }
+
+
+module.exports = {
+    verify: verify
+};

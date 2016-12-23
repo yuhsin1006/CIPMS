@@ -4,7 +4,7 @@
   "description": "Camera IP mapping server",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
+    "start": "node --harmony-async-await main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Archibald Chiang",

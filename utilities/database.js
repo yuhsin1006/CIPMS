@@ -8,7 +8,7 @@
  * ---------------------------------------------*/
 
 'use strict'
-exports.version = '1.0.3';
+exports.version = '2.0.0';
 
 
 // import mongoDB libaraies
@@ -17,7 +17,7 @@ let MongoClient = require('mongodb').MongoClient;
 
 // insert a document to database
 async function insertDocument(dbName, collectionName, data) {
-    // when parameter is undefined
+    // check input data
     if (!data) {
         throw new Error('No data');
     }
@@ -48,8 +48,8 @@ async function insertDocument(dbName, collectionName, data) {
 }
 
 
-/* WARNING! This module is still under construction! */
 async function findDocument(dbName, collectionName, data) {
+    // check input data
     if (!data) {
         throw new Error('No condition to be referenced.');
     }
@@ -90,4 +90,4 @@ async function findDocument(dbName, collectionName, data) {
 module.exports = {
     insertDocument: insertDocument,
     findDocument: findDocument
-}
+};
