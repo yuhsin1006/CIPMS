@@ -11,15 +11,15 @@
 // upnp port forwarding
 //var upnp = require('./utilities/upnp.js');
 // import mongoDB libaraies
-var db = require('./utilities/database.js');
+let db = require('./utilities/database.js');
 // express libaraies
-var express = require('express');
-var app = express();
-var path = require('path');
+let express = require('express');
+let app = express();
+let path = require('path');
 // bodyParser
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 // authentication module
-var auth = require('./utilities/auth.js');
+let auth = require('./utilities/auth.js');
 
 
 // set folder 'public' as public access folder
@@ -34,7 +34,15 @@ app.get('/login', (req, res) => {
 
 // handle sign up process form user
 app.post('/userSignup', (req, res) => {
-    var data = req.body;
+    // request body
+    // {
+    //      fName:  <string>    First Name
+    //      lName:  <string>    Last Name
+    //      phone:  <string>    telephone number
+    //      email:  <string>    email address (used as account)
+    //      pwd:    <string>    password
+    // }
+    let data = req.body;
 
     /* send json response */
     // response data schema
@@ -42,9 +50,9 @@ app.post('/userSignup', (req, res) => {
     //      result:   <integer>  1: success, 0:fail
     //      message:  <string>   message to user, shown by client app
     // }
-    var resData = {
+    let resData = {
         result: 0,
-        message: '錯誤。'
+        message: '系統錯誤，請再試一次'
     };
     db.insertDocument('cimpsDB', 'users', data) // insert document
         .then(() => {
@@ -53,18 +61,22 @@ app.post('/userSignup', (req, res) => {
                 message: '註冊成功!'
             };
 
-            console.log('Success\n\n');
+            // send response
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resData));
+
+            console.log('A user registered successfully\n');
         }, err => {
             resData = {
                 result: 0,
                 message: '註冊失敗，請再試一次。'
             };
 
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resData));
+
             console.log(err);
         });
-
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(resData));
 });
 
 // user login authentication
@@ -72,7 +84,7 @@ app.post('/auth', (req, res) => {
     let data = req.body;
     let resData = {
         result: 0, // 1: success, 0:fail
-        description: '錯誤，請再試一次'
+        description: '系統錯誤，請再試一次'
     };
     auth.verify(data.email, data.pwd) // verify email and password then return result
         .then(result => {
@@ -82,20 +94,29 @@ app.post('/auth', (req, res) => {
                     result: 1,
                     message: '認證成功'
                 };
+
+                // send json response
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(resData));
             } else {
                 resData = {
                     result: 0,
                     message: '帳號或密碼錯誤'
                 };
+
+                // send json response
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(resData));
             }
         }, reason => {
+            // send json response
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resData));
             console.log(reason);
         });
 
 
-    // send json response
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(resData));
+
 });
 
 // route that devices will automatically connect and reqister their current ip:port

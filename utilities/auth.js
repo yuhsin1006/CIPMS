@@ -21,7 +21,6 @@ async function verify(mail, pwd) {
         throw new Error('Input data is invalid.');
     }
 
-
     // establish connection
     let connection;
     try {
