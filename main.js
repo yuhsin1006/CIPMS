@@ -100,7 +100,7 @@ app.post('/auth', (req, res) => {
 
 // route that devices will automatically connect and reqister their current ip:port
 app.use('/deviceReg', (req, res) => {
-    resData = {
+    let resData = {
         result: 0,
         message: 'Under construction.'
     };

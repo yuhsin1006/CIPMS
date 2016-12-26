@@ -18,7 +18,7 @@ let MongoClient = require('mongodb').MongoClient;
 async function verify(mail, pwd) {
     // check input data
     if (!mail || !pwd) {
-        reject(new Error('Input data is invalid.'));
+        throw new Error('Input data is invalid.');
     }
 
 
