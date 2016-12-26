@@ -80,12 +80,12 @@ app.post('/auth', (req, res) => {
             if (result.status) {
                 resData = {
                     result: 1,
-                    description: '認證成功'
+                    message: '認證成功'
                 };
             } else {
                 resData = {
                     result: 0,
-                    description: '帳號或密碼錯誤'
+                    message: '帳號或密碼錯誤'
                 };
             }
         }, reason => {
@@ -93,6 +93,17 @@ app.post('/auth', (req, res) => {
         });
 
 
+    // send json response
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(resData));
+});
+
+// route that devices will automatically connect and reqister their current ip:port
+app.use('/deviceReg', (req, res) => {
+    resData = {
+        result: 0,
+        message: 'Under construction.'
+    };
     // send json response
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(resData));

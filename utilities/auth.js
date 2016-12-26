@@ -33,7 +33,7 @@ async function verify(mail, pwd) {
 
     // select collection and insert data
     let collection = connection.collection('users');
-    // data to be found
+    // query criteria
     let queryTarget = {
         email: mail
     };
@@ -54,7 +54,7 @@ async function verify(mail, pwd) {
                     } else {
                         result = {
                             status: false,
-                            description: 'Passord is not correct.'
+                            description: 'Password is not correct.'
                         };
                     }
                 } else {
