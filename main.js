@@ -92,7 +92,8 @@ app.post('/auth', (req, res) => {
             if (result.status) {
                 resData = {
                     result: 1,
-                    message: '認證成功'
+                    message: '認證成功',
+                    fName: result.fName
                 };
 
                 // send json response

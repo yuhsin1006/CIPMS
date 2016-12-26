@@ -48,7 +48,8 @@ async function verify(mail, pwd) {
                     if (doc.pwd == pwd) {
                         result = {
                             status: true,
-                            description: 'Success.'
+                            description: 'Success.',
+                            fName: doc.fName
                         };
                     } else {
                         result = {
