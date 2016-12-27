@@ -131,6 +131,55 @@ app.use('/deviceReg', (req, res) => {
     res.send(JSON.stringify(resData));
 });
 
+// get device information
+app.post('/getDeviceInfo', (req, res) => {
+    let resData = {
+        result: 0,
+        serial: '',
+        macAddr: '',
+        ipAddr: '',
+        port: 1025,
+        message: '系統錯誤，請再試一次'
+    };
+
+    let data = req.body;
+    let queryTarget = {
+        serial: data.serial
+    };
+    db.findDocument('cimpsDB', 'devices', queryTarget)
+        .then(result => {
+            let resData = {
+                result: 1,
+                serial: result.serial,
+                macAddr: result.mac,
+                ipAddr: result.ip,
+                port: result.port,
+                message: '成功'
+            };
+
+            // send json response
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resData));
+
+            console.log('Success');
+        }, reason => {
+            let resData = {
+                result: 0,
+                serial: null,
+                macAddr: null,
+                ipAddr: null,
+                port: null,
+                message: ''
+            };
+
+            // send json response
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resData));
+
+            console.log(reason);
+        });
+});
+
 // route that devices will automatically connect and reqister their current ip:port
 app.use('/devices', (req, res) => {
     // Device information object
@@ -157,10 +206,16 @@ app.use('/devices', (req, res) => {
     let resData;
     db.insertDocument('cimpsDB', 'devices', deviceInfo)
         .then(() => {
-            resData = { result: 1 };
+            resData = {
+                result: 1,
+                message: 'Device register successfully'
+            };
             console.log('Success\n\n');
         }, err => {
-            resData = { result: 0 };
+            resData = {
+                result: 0,
+                message: err
+            };
             console.log(err);
         });
 
