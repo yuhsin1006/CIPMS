@@ -15,7 +15,7 @@ let MongoClient = require('mongodb').MongoClient;
 
 
 // compare 
-async function verify(mail, pwd) {
+async function login(mail, pwd) {
     // check input data
     if (!mail || !pwd) {
         throw new Error('Input data is invalid.');
@@ -78,7 +78,18 @@ async function verify(mail, pwd) {
     return result;
 }
 
+// token schema
+// {
+//      _id:        <id>        use document id as token
+//      email:      <string>    corresponding email account
+//      expTime:    <date>      token expire time
+// }
+async function getToken(email) {
+    ;
+}
+
 
 module.exports = {
-    verify: verify
+    login: login,
+    getToken: getToken
 };

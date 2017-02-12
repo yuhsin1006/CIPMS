@@ -161,12 +161,12 @@
         //傳送失敗則跳出失敗訊息       
         error: function () {
           //資料傳送失敗後就會執行這個function內的程式，可以在這裡寫入要執行的程式  
-          alert("失敗");
+          alert(jQuery.parseJSON(res));
         },
         //傳送成功則跳出成功訊息
         success: function () {
           //資料傳送成功後就會執行這個function內的程式，可以在這裡寫入要執行的程式  
-          alert("成功");
+          alert(jQuery.parseJSON(res));
         }
       });
     }
@@ -177,7 +177,7 @@
         email: $('#in_email').val(),
         pwd: $('#in_pwd').val()
       }
-      console.log(msg);
+
       $.ajax({
         //告訴程式表單要傳送到哪裡                                          
         url: "/auth",
