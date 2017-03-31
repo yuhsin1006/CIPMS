@@ -1,8 +1,10 @@
 let express = require('express');
 let router = express.Router();
+let db = require('../utilities/database.js');
+
 
 // get device information
-router.post('/getDeviceInfo', (req, res) => {
+router.post('/', (req, res) => {
     let resData = {
         result: 0,
         serial: '',
@@ -28,24 +30,15 @@ router.post('/getDeviceInfo', (req, res) => {
             };
 
             // send json response
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(resData));
-
+            res.status(201).json(resData);
             console.log('Success');
         }, reason => {
             let resData = {
-                result: 0,
-                serial: null,
-                macAddr: null,
-                ipAddr: null,
-                port: null,
                 message: ''
             };
 
             // send json response
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(resData));
-
+            res.status(500).json(resData);
             console.log(reason);
         });
 });

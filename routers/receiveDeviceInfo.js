@@ -1,8 +1,9 @@
 let express = require('express');
 let router = express.Router();
+let db = require('../utilities/database.js');
 
 // route that devices will automatically connect and reqister their current ip:port
-router.use('/', (req, res) => {
+router.post('/', (req, res) => {
     // Device information object
     // {
     //    serial:   <string>  product serial number
@@ -31,18 +32,20 @@ router.use('/', (req, res) => {
                 result: 1,
                 message: 'Device register successfully'
             };
+
+            // send json response
+            res.status(201).json(resData);
             console.log('Success\n\n');
         }, err => {
             resData = {
                 result: 0,
                 message: err
             };
+
+            // send json response
+            res.status(500).json(resData);
             console.log(err);
         });
-
-    // send json response
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(resData));
 });
 
 

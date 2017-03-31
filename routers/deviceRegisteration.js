@@ -8,8 +8,7 @@ router.use('/', (req, res) => {
         message: 'Under construction.'
     };
     // send json response
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(resData));
+    res.status(201).json(resData);
 });
 
 

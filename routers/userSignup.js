@@ -1,5 +1,7 @@
 let express = require('express');
 let router = express.Router();
+let db = require('../utilities/database.js');
+
 
 // handle sign up process from user
 router.post('/', (req, res) => {
@@ -31,9 +33,7 @@ router.post('/', (req, res) => {
             };
 
             // send response
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(resData));
-
+            res.status(201).json(JSON.stringify(resData));
             console.log('A user registered successfully\n');
         }, err => {
             resData = {
@@ -41,9 +41,7 @@ router.post('/', (req, res) => {
                 message: '註冊失敗，請再試一次。'
             };
 
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(resData));
-
+            res.status(500).json(JSON.stringify(resData));
             console.log(err);
         });
 });
